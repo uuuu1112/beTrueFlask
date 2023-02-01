@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block nav %}
+    <ul class="nav justify-content-center">
+        {% for item in navData %}
+        {% if item==firstNav %}
+        <li class="nav-item" onclick="openContent(event,'{{item}}')" id="defaultOpen">
+            <a href="#" class="nav-link active" aria-current="page">{{item}}</a>
+        </li>
+        {% else%}
+        <li class="nav-item" onclick="openContent(event,'{{item}}')">
+            <a href="#" class="nav-link">{{item}}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        <div id="inputForm">
+            <form class="d-flex" action="" method = "post" keyup="if (event.keyCode==13){createContent()}">
+                <input type="text" style="display: none;">
+                <input class="form-control me-2" type="text" placeholder="input stock id here" aria-label="Search" value="1101" name="stockId" id="stockId" >  
+                <button class="btn btn-outline-primary" type="button"  onclick="return createContent()" >submit</button>
+            </form>
+        </div>    
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <div id="price" class="tabcontent">
+        <h3>price</h3>
+        <p>price table</p>
+    </div>
+
+    <div id="month revenue" class="tabcontent">
+        <h3>month revenue</h3>
+        <p>month revenue table</p>
+    </div>
+
+    <div id="statement sheet" class="tabcontent">
+        <h3>statement sheet</h3>
+        <p>statement sheet table</p>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="../static/main.js"></script>
+{% endblock %}
