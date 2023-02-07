@@ -1,4 +1,6 @@
 from flask import Flask,redirect,url_for,render_template
+from data import *
+import json
 
 app = Flask(__name__)
 
@@ -9,9 +11,16 @@ cache={}
 @app.route("/")
 def home():
     return render_template("index.html", firstNav=firstNav,navData=singleDataNav)
-@app.route("/<stockId>")
-def stockId(stockId):
-    return f"stock id {stockId}"
+
+@app.route("/table/<stockId>")
+def table(stockId):
+    data=BasicTable(stockId)
+    cache['stockId']=stockId
+    cache['dayDates']=data.dayDates
+    cache['monthDates']=data.monthDates
+    cache['seasonDates']=data.seasonDates
+    allContent=data.allContent()
+    return json.dumps(allContent)
 
 
 if __name__ == "__main__":
