@@ -1,6 +1,6 @@
 from basic import *
 import concurrent.futures
-import re
+# import re
 
 # 這個class，我想拿到特定公司的基礎資料
 class API(FromAPI):
@@ -35,26 +35,24 @@ class API(FromAPI):
 class ManageData(FromAPI):
     def __init__(self):
         super().__init__()
-    def getPiovotTable(self,table,values,columns='stock_id',index='date'):
-        return table.pivot_table(index=index,values=values,columns=columns)
-    def cleanSeason(self,year):
-        if re.search('年',year):
-            pos=re.search('年',year).start()
-            return year[:pos]
-        else:
-            return year    
+        self.bt=BasicTrans()
     def priceContent(self,table,values='close',columns='stock_id',index='date'):
-        pivotTable=self.getPiovotTable(table,values,columns,index)
+        pivotTable=self.bt.getPiovotTable(table,values,columns,index)
         return pivotTable.reset_index()
     def revenueContent(self,table,values='revenue',columns='stock_id',index='date'):
-        pivotTable=self.getPiovotTable(table,values,columns,index)
+        pivotTable=self.bt.getPiovotTable(table,values,columns,index)
+        # YoY=self.bt.periodIncrease(12,pivotTable)
+        # YoY.rename(columns={self.stock_id:'YoY%'},inplace=True)
+        # seasonYoy=self.bt.periodIncrease(12,pivotTable,12)
+        # dataframe=YoY.join(seasonYoy)
+        # dataframe=dataframe.sort_index(ascending=False).reset_index()  
         return pivotTable.reset_index()
     def financialContent(self,table,values='value',columns='type',index='date'):
-        pivotTable=self.getPiovotTable(table,values,columns,index)
+        pivotTable=self.bt.getPiovotTable(table,values,columns,index)
         return pivotTable.reset_index()
     def dividendContent(self,table):
         dividend=table[['year','StockEarningsDistribution','CashEarningsDistribution']]
-        dividend['year']=dividend['year'].apply(self.cleanSeason)
+        dividend['year']=dividend['year'].apply(self.bt.cleanSeason)
         return dividend.groupby('year').sum().sort_index(ascending=False).reset_index() 
 
 # 頁面要用的資料總結

@@ -2,6 +2,8 @@ import requests
 # import copy
 import pandas as pd
 from dateManage import *
+import re
+
 
 class Param():
     def __init__(self):
@@ -17,6 +19,25 @@ class Param():
             return data
         except:
             print('request error')   
+class BasicTrans():
+    def getPiovotTable(self,table,values,columns='stock_id',index='date'):
+        return table.pivot_table(index=index,values=values,columns=columns)
+    def cleanSeason(self,year):
+        if re.search('年',year):
+            pos=re.search('年',year).start()
+            return year[:pos]
+        else:
+            return year   
+    def periodSum(self,n,pivotTable):
+        return pivotTable.rolling(n).sum()
+    def periodMean(self,n,pivotTable):
+        return pivotTable.rolling(n).mean()
+    def nShift(self,n,pivotTable):
+        return pivotTable.shift(n,axis=0)
+    def periodIncrease(self,n,pivotTable,m=1):
+        periodMean=self.periodMean(m,pivotTable)
+        return round((periodMean/self.nShift(n,periodMean)-1)*100)
+
 class FromAPI(Param):
     def __init__(self):
         super().__init__()
