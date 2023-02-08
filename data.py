@@ -75,13 +75,19 @@ class ManageData(FromAPI):
         dataframe=dataframe.join(year5YoY)
         dataframe=dataframe.sort_index(ascending=False).reset_index()  
         return dataframe
-    def financialContent(self,table,values='value',columns='type',index='date'):
-        pivotTable=self.bt.getPivotTable(table,values,columns,index)
-        return pivotTable.reset_index()
+    def financialContent(self,table,type='EPS',values='value',columns='type',index='date'):
+        pivotTable=self.bt.getPivotTable(table,values,columns,index)[type]
+        yearType=self.bt.periodMean(4,pivotTable)
+        YoY=self.bt.periodIncrease(4,pivotTable)
+        yearYoY=self.bt.periodIncrease(4,yearType)
+        dataframe=pd.DataFrame({type:pivotTable,'YoY%':YoY,'year'+type+'YoY%':yearYoY})
+        dataframe=dataframe.sort_index(ascending=False).reset_index()
+        return dataframe
     def dividendContent(self,table):
         dividend=table[['year','StockEarningsDistribution','CashEarningsDistribution']]
         dividend['year']=dividend['year'].apply(self.bt.cleanSeason)
-        return dividend.groupby('year').sum().sort_index(ascending=False).reset_index() 
+        dividendTable=dividend.groupby('year').sum().sort_index(ascending=False).reset_index() 
+        return dividendTable
 
 # 頁面要用的資料總結
 class BasicTable(API):
