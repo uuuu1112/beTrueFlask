@@ -56,7 +56,7 @@ function createContent(url="/table/",tabName="") {
         return response.json()
     }).then(function (data) {
         if(tabName==""){
-            console.log("get all single data",data)
+            // console.log("get all single data",data)
             for(let i=0;i<tabMap.length;i++){
                 console.log("table",tabMap[i][1])
                 let data1={...JSON.parse(data[tabMap[i][1]])}

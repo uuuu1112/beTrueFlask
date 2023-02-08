@@ -37,18 +37,28 @@ class ManageData(FromAPI):
         super().__init__()
         self.bt=BasicTrans()
     def priceContent(self,table,values='close',columns='stock_id',index='date'):
-        pivotTable=self.bt.getPiovotTable(table,values,columns,index)
+        pivotTable=self.bt.getPivotTable(table,values,columns,index)
         return pivotTable.reset_index()
-    def revenueContent(self,table,values='revenue',columns='stock_id',index='date'):
-        pivotTable=self.bt.getPiovotTable(table,values,columns,index)
-        # YoY=self.bt.periodIncrease(12,pivotTable)
-        # YoY.rename(columns={self.stock_id:'YoY%'},inplace=True)
-        # seasonYoy=self.bt.periodIncrease(12,pivotTable,12)
-        # dataframe=YoY.join(seasonYoy)
-        # dataframe=dataframe.sort_index(ascending=False).reset_index()  
-        return pivotTable.reset_index()
+    def revenueContent(self,stock_id,table,values='revenue',columns='stock_id',index='date'):
+        pivotTable=self.bt.getPivotTable(table,values,columns,index)
+        YoY=self.bt.periodIncrease(12,pivotTable)
+        seasonYoY=self.bt.periodIncrease(12,pivotTable,3)
+        yearYoY=self.bt.periodIncrease(12,pivotTable,12)
+        year3YoY=self.bt.periodIncrease(36,pivotTable,12)
+        year5YoY=self.bt.periodIncrease(60,pivotTable,12)
+        YoY.rename(columns={stock_id:'YoY%'},inplace=True)
+        seasonYoY.rename(columns={stock_id:'3monthYoY%'},inplace=True)
+        yearYoY.rename(columns={stock_id:'12monthYoY%'},inplace=True)  
+        year3YoY.rename(columns={stock_id:'12month3yearGrowth%'},inplace=True)
+        year5YoY.rename(columns={stock_id:'12month5yearGrowth%'},inplace=True)      
+        dataframe=YoY.join(seasonYoY)
+        dataframe=dataframe.join(yearYoY)
+        dataframe=dataframe.join(year3YoY)
+        dataframe=dataframe.join(year5YoY)
+        dataframe=dataframe.sort_index(ascending=False).reset_index()  
+        return dataframe
     def financialContent(self,table,values='value',columns='type',index='date'):
-        pivotTable=self.bt.getPiovotTable(table,values,columns,index)
+        pivotTable=self.bt.getPivotTable(table,values,columns,index)
         return pivotTable.reset_index()
     def dividendContent(self,table):
         dividend=table[['year','StockEarningsDistribution','CashEarningsDistribution']]
@@ -67,7 +77,7 @@ class BasicTable(API):
         return list(table[columnName])   
     def allContent(self):
         priceContent=self.md.priceContent(self.priceTable).to_json()
-        revenueContent=self.md.revenueContent(self.revenueTable).to_json()
+        revenueContent=self.md.revenueContent(self.stock_id,self.revenueTable).to_json()
         financialContent=self.md.financialContent(self.financialTable).to_json()
         dividendContent=self.md.dividendContent(self.dividendTable).to_json()
         allContent={'priceTable':priceContent,'revenueTable':revenueContent,'financialTable':financialContent,'dividendTable':dividendContent}

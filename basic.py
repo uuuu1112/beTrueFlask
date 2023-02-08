@@ -20,7 +20,7 @@ class Param():
         except:
             print('request error')   
 class BasicTrans():
-    def getPiovotTable(self,table,values,columns='stock_id',index='date'):
+    def getPivotTable(self,table,values,columns='stock_id',index='date'):
         return table.pivot_table(index=index,values=values,columns=columns)
     def cleanSeason(self,year):
         if re.search('年',year):
