@@ -36,9 +36,23 @@ class ManageData(FromAPI):
     def __init__(self):
         super().__init__()
         self.bt=BasicTrans()
-    def priceContent(self,table,values='close',columns='stock_id',index='date'):
+    def priceContent(self,stock_id,table,values='close',columns='stock_id',index='date'):
         pivotTable=self.bt.getPivotTable(table,values,columns,index)
-        return pivotTable.reset_index()
+        monthMean= self.bt.deviationRate(pivotTable,self.bt.periodMean(20,pivotTable))
+        seasonMean= self.bt.deviationRate(pivotTable,self.bt.periodMean(60,pivotTable))
+        yearMean= self.bt.deviationRate(pivotTable,self.bt.periodMean(240,pivotTable))
+        year5Mean=self.bt.deviationRate(pivotTable,self.bt.periodMean(1200,pivotTable))
+        pivotTable.rename(columns={stock_id:'price'},inplace=True)
+        monthMean.rename(columns={stock_id:'20dayMeanDeviation%'},inplace=True)
+        seasonMean.rename(columns={stock_id:'60dayMeanDeviation%'},inplace=True)
+        yearMean.rename(columns={stock_id:'240dayMeanDeviation%'},inplace=True)
+        year5Mean.rename(columns={stock_id:'1200dayMeanDeviation'},inplace=True)
+        dataframe=pivotTable.join(monthMean)
+        dataframe=dataframe.join(seasonMean)
+        dataframe=dataframe.join(yearMean)
+        dataframe=dataframe.join(year5Mean)
+        dataframe=dataframe.sort_index(ascending=False).reset_index()  
+        return dataframe
     def revenueContent(self,stock_id,table,values='revenue',columns='stock_id',index='date'):
         pivotTable=self.bt.getPivotTable(table,values,columns,index)
         YoY=self.bt.periodIncrease(12,pivotTable)
@@ -76,7 +90,7 @@ class BasicTable(API):
     def columnList(self,table,columnName='date'):
         return list(table[columnName])   
     def allContent(self):
-        priceContent=self.md.priceContent(self.priceTable).to_json()
+        priceContent=self.md.priceContent(self.stock_id,self.priceTable).to_json()
         revenueContent=self.md.revenueContent(self.stock_id,self.revenueTable).to_json()
         financialContent=self.md.financialContent(self.financialTable).to_json()
         dividendContent=self.md.dividendContent(self.dividendTable).to_json()

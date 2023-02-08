@@ -37,6 +37,8 @@ class BasicTrans():
     def periodIncrease(self,n,pivotTable,m=1):
         periodMean=self.periodMean(m,pivotTable)
         return round((periodMean/self.nShift(n,periodMean)-1)*100)
+    def deviationRate(self,pivotTable,meanTable,dec=0):
+        return ((pivotTable/meanTable-1)*100).round(dec)
 
 class FromAPI(Param):
     def __init__(self):
