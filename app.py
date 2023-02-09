@@ -16,9 +16,12 @@ def home():
 def table(stockId):
     data=BasicTable(stockId)
     cache['stockId']=stockId
-    cache['dayDates']=data.dayDates
-    cache['monthDates']=data.monthDates
-    cache['seasonDates']=data.seasonDates
+    cache['priceTable']=data.priceTable
+    cache['revenueTable']=data.revenueTable
+    cache['financialTaable']=data.financialTable
+    # cache['dayDates']=data.dayDates
+    # cache['monthDates']=data.monthDates
+    # cache['seasonDates']=data.seasonDates
     allContent=data.allContent()
     return json.dumps(allContent)
 
