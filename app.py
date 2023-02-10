@@ -1,5 +1,6 @@
 from flask import Flask,redirect,url_for,render_template
 from data import *
+from overview import *
 import json
 
 app = Flask(__name__)
@@ -26,10 +27,13 @@ def table(stockId):
     return json.dumps(allContent)
 @app.route("/overview")
 def overview():
-    print('get overview')
+    overviewTable=OverviewTable()
+    # print('get overview')
     # print(cache['stockId'])
+    monthDates=cache['monthDates']
+    table=overviewTable.allContent(monthDates[-1])
 
-    return cache['stockId']
+    return json.dumps(table)
 
 if __name__ == "__main__":
     app.run(debug=True)

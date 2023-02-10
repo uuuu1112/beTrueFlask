@@ -4,7 +4,7 @@ import pandas as pd
 from dateManage import *
 import re
 
-
+token='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRlIjoiMjAyMy0wMi0xMCAyMzowMjowMSIsInVzZXJfaWQiOiJ1dXV1MTExMiIsImlwIjoiMjIzLjEzOS4zNC4xMDgifQ.E0OHj3NJf2WRATdCCARefoyVTzQtRrXhoQkMaxerlic'
 class Param():
     def __init__(self):
         self.url="https://api.finmindtrade.com/api/v4/data"
@@ -47,7 +47,7 @@ class FromAPI(Param):
         parameter = {
             "dataset": dataset,
             "start_date": start_date,
-            "token": "", # 參考登入，獲取金鑰
+            "token": token, # 參考登入，獲取金鑰
         }
         try:
             getData=self.getData(parameter)
@@ -61,7 +61,7 @@ class FromAPI(Param):
             "data_id": data_id,
             "start_date": start_date,
             "end_date":end_date,
-            "token": "", # 參考登入，獲取金鑰
+            "token": token, # 參考登入，獲取金鑰
         }
         try:
             print('start get data',dataset)

@@ -76,8 +76,8 @@ function getApi(url){
     .then((response)=>response.json())
     .then((data)=>{
         showPage()
-        console.log("call url",url)
-        console.log("print data",data)
+        // console.log("call url",url)
+        // console.log("print data",data)
         return data
     })    
 }
@@ -92,10 +92,15 @@ async function createContent(){
     }
     return data
 }
+async function createSingleTable(url,tabName){
+    let data=await getApi(url)
+    createTable(tabName,JSON.parse(data))
+}
 function createAllContent(){
     createContent().then(()=>{
         console.log('complete')
-        getApi('/overview')
+        // getApi('overview')
+        createSingleTable('/overview','overview')
     })
     // createContent("/overview","overview")
 }
