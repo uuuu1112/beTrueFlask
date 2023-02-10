@@ -42,36 +42,62 @@ function createTable(tabName,data){
     }   
 }
 
-function createContent(url="/table/",tabName="") {
-    loadingPage()
-    let stockId=""
-    if(tabName==""){
-        stockId = document.getElementById('stockId').value;
-        console.log('request single data')
-    }else{
-        console.log('request multi data')
-    }
+// function createContent(url="/table/",tabName="") {
+//     loadingPage()
+//     let stockId=""
+//     if(tabName==""){
+//         stockId = document.getElementById('stockId').value;
+//         console.log('request single data')
+//     }else{
+//         console.log('request multi data')
+//     }
 
-    fetch(url+stockId).then(function (response) {
-        return response.json()
-    }).then(function (data) {
-        if(tabName==""){
-            // console.log("get all single data",data)
-            for(let i=0;i<tabMap.length;i++){
-                console.log("table",tabMap[i][1])
-                let data1={...JSON.parse(data[tabMap[i][1]])}
-                createTable(tabMap[i][0],data1)
-            }
-        }
-        else{
-            console.log("get multi data")
-            createTable(tabName,data)
-        }
+//     fetch(url+stockId).then(function (response) {
+//         return response.json()
+//     }).then(function (data) {
+//         if(tabName==""){
+//             // console.log("get all single data",data)
+//             for(let i=0;i<tabMap.length;i++){
+//                 console.log("table",tabMap[i][1])
+//                 let data1={...JSON.parse(data[tabMap[i][1]])}
+//                 createTable(tabMap[i][0],data1)
+//             }
+//         }
+//         else{
+//             console.log("get multi data",data)
+//             createTable(tabName,data)
+//         }
+//         showPage()
+//     })
+// }
+function getApi(url){
+    loadingPage()
+    return fetch(url)
+    .then((response)=>response.json())
+    .then((data)=>{
         showPage()
-    })
+        console.log("call url",url)
+        console.log("print data",data)
+        return data
+    })    
+}
+async function createContent(){
+    stockId = document.getElementById('stockId').value;
+    let data= await getApi('/table/'+stockId)    
+
+    for(let i=0;i<tabMap.length;i++){
+        console.log("table",tabMap[i][1])
+        let data1={...JSON.parse(data[tabMap[i][1]])}
+        createTable(tabMap[i][0],data1)
+    }
+    return data
 }
 function createAllContent(){
-    createContent()
+    createContent().then(()=>{
+        console.log('complete')
+        getApi('/overview')
+    })
+    // createContent("/overview","overview")
 }
 function openContent(evt, tabName) {
     var i, tabcontent, tablinks;

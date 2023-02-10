@@ -16,15 +16,20 @@ def home():
 def table(stockId):
     data=BasicTable(stockId)
     cache['stockId']=stockId
-    cache['priceTable']=data.priceTable
-    cache['revenueTable']=data.revenueTable
-    cache['financialTaable']=data.financialTable
-    # cache['dayDates']=data.dayDates
-    # cache['monthDates']=data.monthDates
-    # cache['seasonDates']=data.seasonDates
+    # cache['priceTable']=data.priceTable
+    # cache['revenueTable']=data.revenueTable
+    # cache['financialTaable']=data.financialTable
+    cache['dayDates']=data.dayDates
+    cache['monthDates']=data.monthDates
+    cache['seasonDates']=data.seasonDates
     allContent=data.allContent()
     return json.dumps(allContent)
+@app.route("/overview")
+def overview():
+    print('get overview')
+    # print(cache['stockId'])
 
+    return cache['stockId']
 
 if __name__ == "__main__":
     app.run(debug=True)
